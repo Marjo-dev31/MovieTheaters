@@ -109,3 +109,14 @@ INSERT INTO sessions VALUES
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'Marcelle Mio'), (SELECT id FROM schedules WHERE start_at = '14:00:00'), (SELECT id FROM users WHERE firstname = 'Estelle')),
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'La planète des singes'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = "Un p'tit truc en plus"), (SELECT id FROM schedules WHERE start_at = '21:00:00'), (SELECT id FROM users WHERE firstname = 'José'));
+
+
+SELECT sessions.id, rooms.name AS rooms, rooms.seats AS seats, movies.name AS movies, schedules.start_at AS schedules FROM sessions 
+INNER JOIN rooms ON rooms.id=room_id
+INNER JOIN movies ON movie_id = movies.id
+INNER JOIN schedules ON schedules.id=schedule_id
+WHERE sessions.cinema_id ='f069c1af-2282-11ef-b034-58a023d3f752'
+ORDER BY movies;
+
+SELECT * FROM prices;
+
