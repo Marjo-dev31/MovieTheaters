@@ -29,7 +29,7 @@ CREATE TABLE movies (
 CREATE TABLE prices (
     id VARCHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
-    price INT NOT NULL
+    price FLOAT NOT NULL
 );
 
 CREATE TABLE users (
@@ -39,7 +39,7 @@ CREATE TABLE users (
     password VARCHAR(255)
 );
 
-CREATE TABLE usercinemas (
+CREATE TABLE user_cinemas (
     user_id VARCHAR(36),
     cinema_id VARCHAR(36),
     PRIMARY KEY (`user_id`, `cinema_id`),
@@ -98,6 +98,12 @@ INSERT INTO users VALUES
 (DEFAULT, 'Thomas', false, '$2a$12$PnI28zQgRRY8bYDky09xG.6Dp7ZXNtoxgS4kSkTbBTGqQKJ7IqPFu'),
 (DEFAULT, 'Estelle', false, '$2a$12$2IeR.uFpo.WjKf5YnfftN.iVS.Je4TtTZEYcY.Fwy18/Ry0qNHKUa');
 
+INSERT INTO user_cinemas VALUES
+((SELECT id FROM users WHERE firstname='Thomas'), (SELECT id FROM cinemas WHERE name= 'Cinéma du centre')),
+((SELECT id FROM users WHERE firstname='Estelle'), (SELECT id FROM cinemas WHERE name= 'Cinéma de quartier')),
+((SELECT id FROM users WHERE firstname='José'), (SELECT id FROM cinemas WHERE name= 'Cinéma du centre')),
+((SELECT id FROM users WHERE firstname='José'), (SELECT id FROM cinemas WHERE name= 'Cinéma de quartier'));
+
 INSERT INTO sessions VALUES 
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Bleu'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Rouge'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
@@ -110,12 +116,14 @@ INSERT INTO sessions VALUES
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'La planète des singes'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
 (DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = "Un p'tit truc en plus"), (SELECT id FROM schedules WHERE start_at = '21:00:00'), (SELECT id FROM users WHERE firstname = 'José'));
 
+-- select all movies of Cinéma de quartier
 
-SELECT sessions.id, rooms.name AS rooms, rooms.seats AS seats, movies.name AS movies, schedules.start_at AS schedules FROM sessions 
+SELECT sessions.id, rooms.name AS rooms, rooms.seats AS seats, movies.name AS movies, schedules.start_at AS schedules, cinemas.name FROM sessions 
 INNER JOIN rooms ON rooms.id=room_id
 INNER JOIN movies ON movie_id = movies.id
-INNER JOIN schedules ON schedules.id=schedule_id
-WHERE sessions.cinema_id ='f069c1af-2282-11ef-b034-58a023d3f752'
+INNER JOIN schedules ON schedules.id= schedule_id
+INNER JOIN cinemas ON cinemas.id = cinema_id
+WHERE cinemas.name = 'Cinéma de quartier'
 ORDER BY movies;
 
 SELECT * FROM prices;
