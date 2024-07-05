@@ -1,6 +1,6 @@
 CREATE DATABASE MovieTheaters;
 
-use MovieTheaters;
+USE MovieTheaters;
 
 
 CREATE TABLE cinemas (
@@ -11,10 +11,7 @@ CREATE TABLE cinemas (
 CREATE TABLE rooms (
     id VARCHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
-    seats INT,
-    cinema_id VARCHAR(36) NOT NULL,
-    FOREIGN KEY (cinema_id) REFERENCES cinemas(id) ON DELETE CASCADE
-    );
+    seats INT);
 
 CREATE TABLE schedules (
     id VARCHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
@@ -29,12 +26,14 @@ CREATE TABLE movies (
 CREATE TABLE prices (
     id VARCHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
-    price FLOAT NOT NULL
+    price DECIMAL(5,2) NOT NULL
 );
 
 CREATE TABLE users (
     id VARCHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     firstname VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     isAdmin BOOLEAN,
     password VARCHAR(255)
 );
@@ -53,24 +52,21 @@ CREATE TABLE sessions (
     room_id VARCHAR(36) NOT NULL,
     movie_id VARCHAR(36) NOT NULL,
     schedule_id VARCHAR(36) NOT NULL,
-    user_id VARCHAR(36),
     FOREIGN KEY (cinema_id) REFERENCES cinemas(id) ON DELETE CASCADE,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
-    FOREIGN KEY (schedule_id) REFERENCES schedules(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
+    FOREIGN KEY (schedule_id) REFERENCES schedules(id) ON DELETE CASCADE);
 
 INSERT INTO cinemas VALUES 
 (DEFAULT, 'Cinéma du centre'),
 (DEFAULT, 'Cinéma de quartier');
 
 INSERT INTO rooms VALUES 
-(DEFAULT, 'Bleu', 180, (SELECT id FROM cinemas WHERE name ='Cinéma du centre')),
-(DEFAULT, 'Rouge', 100, (SELECT id FROM cinemas WHERE name ='Cinéma du centre')),
-(DEFAULT, 'Jaune', 120, (SELECT id FROM cinemas WHERE name ='Cinéma du centre')),
-(DEFAULT, 'Vert', 180, (SELECT id FROM cinemas WHERE name ='Cinéma de quartier')),
-(DEFAULT, 'Orange', 100, (SELECT id FROM cinemas WHERE name ='Cinéma de quartier'));
+(DEFAULT, 'Bleu', 180),
+(DEFAULT, 'Rouge', 100),
+(DEFAULT, 'Jaune', 120),
+(DEFAULT, 'Vert', 180),
+(DEFAULT, 'Orange', 100);
 
 INSERT INTO schedules VALUES 
 (DEFAULT, '09:00:00'),
@@ -94,9 +90,9 @@ INSERT INTO prices VALUES
 (DEFAULT, 'Moins de 14 ans', 5.90);
 
 INSERT INTO users VALUES 
-(DEFAULT, 'José', true, '$2a$12$.ZMaCf.BUdNlb1o3Qc2NHOsv2cwsiQBxyGEDP/CXcFpTbWQmc251q'),
-(DEFAULT, 'Thomas', false, '$2a$12$PnI28zQgRRY8bYDky09xG.6Dp7ZXNtoxgS4kSkTbBTGqQKJ7IqPFu'),
-(DEFAULT, 'Estelle', false, '$2a$12$2IeR.uFpo.WjKf5YnfftN.iVS.Je4TtTZEYcY.Fwy18/Ry0qNHKUa');
+(DEFAULT, 'José','Dupond','josedupond@cinema.com', true, '$2a$12$.ZMaCf.BUdNlb1o3Qc2NHOsv2cwsiQBxyGEDP/CXcFpTbWQmc251q'),
+(DEFAULT, 'Thomas','Dupont','thomasdupont@cinema.com', false, '$2a$12$PnI28zQgRRY8bYDky09xG.6Dp7ZXNtoxgS4kSkTbBTGqQKJ7IqPFu'),
+(DEFAULT, 'Estelle','Dupontel','estelledupontel@cinema.com', false, '$2a$12$2IeR.uFpo.WjKf5YnfftN.iVS.Je4TtTZEYcY.Fwy18/Ry0qNHKUa');
 
 INSERT INTO user_cinemas VALUES
 ((SELECT id FROM users WHERE firstname='Thomas'), (SELECT id FROM cinemas WHERE name= 'Cinéma du centre')),
@@ -105,16 +101,20 @@ INSERT INTO user_cinemas VALUES
 ((SELECT id FROM users WHERE firstname='José'), (SELECT id FROM cinemas WHERE name= 'Cinéma de quartier'));
 
 INSERT INTO sessions VALUES 
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Bleu'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Rouge'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Bleu'), (SELECT id FROM movies WHERE name = "Un p'tit truc en plus"), (SELECT id FROM schedules WHERE start_at = '14:00:00'), (SELECT id FROM users WHERE firstname = 'Thomas')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Jaune'), (SELECT id FROM movies WHERE name = 'Bad Boys 3'), (SELECT id FROM schedules WHERE start_at = '21:00:00'), (SELECT id FROM users WHERE firstname = 'Thomas')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Jaune'), (SELECT id FROM movies WHERE name = 'Bad Boys 3'), (SELECT id FROM schedules WHERE start_at = '18:00:00'), (SELECT id FROM users WHERE firstname = 'Thomas')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Vert'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'Estelle')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Vert'), (SELECT id FROM movies WHERE name = 'Marcelle Mio'), (SELECT id FROM schedules WHERE start_at = '14:00:00'), (SELECT id FROM users WHERE firstname = 'Estelle')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'Marcelle Mio'), (SELECT id FROM schedules WHERE start_at = '14:00:00'), (SELECT id FROM users WHERE firstname = 'Estelle')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'La planète des singes'), (SELECT id FROM schedules WHERE start_at = '09:00:00'), (SELECT id FROM users WHERE firstname = 'José')),
-(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = "Un p'tit truc en plus"), (SELECT id FROM schedules WHERE start_at = '21:00:00'), (SELECT id FROM users WHERE firstname = 'José'));
+(DEFAULT, 
+    (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), 
+    (SELECT id FROM rooms WHERE name ='Bleu'), 
+    (SELECT id FROM movies WHERE name = 'Furiosa'), 
+    (SELECT id FROM schedules WHERE start_at = '09:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Rouge'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Bleu'), (SELECT id FROM movies WHERE name = "Un p'tit truc en plus"), (SELECT id FROM schedules WHERE start_at = '14:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Jaune'), (SELECT id FROM movies WHERE name = 'Bad Boys 3'), (SELECT id FROM schedules WHERE start_at = '21:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma du centre'), (SELECT id FROM rooms WHERE name ='Jaune'), (SELECT id FROM movies WHERE name = 'Bad Boys 3'), (SELECT id FROM schedules WHERE start_at = '18:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Vert'), (SELECT id FROM movies WHERE name = 'Furiosa'), (SELECT id FROM schedules WHERE start_at = '09:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Vert'), (SELECT id FROM movies WHERE name = 'Marcelle Mio'), (SELECT id FROM schedules WHERE start_at = '14:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'Marcelle Mio'), (SELECT id FROM schedules WHERE start_at = '14:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = 'La planète des singes'), (SELECT id FROM schedules WHERE start_at = '09:00:00')),
+(DEFAULT, (SELECT id FROM cinemas WHERE name = 'Cinéma de quartier'), (SELECT id FROM rooms WHERE name ='Orange'), (SELECT id FROM movies WHERE name = "Un p'tit truc en plus"), (SELECT id FROM schedules WHERE start_at = '21:00:00'));
 
 -- select all movies of Cinéma de quartier
 
