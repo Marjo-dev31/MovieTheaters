@@ -5,6 +5,9 @@ import { SessionsController } from './sessions/sessions.controller';
 import { SessionsService } from './sessions/sessions.service';
 import { SessionsModule } from './sessions/sessions.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MoviesController } from './movies/movies.controller';
+import { MoviesService } from './movies/movies.service';
+import { MoviesModule } from './movies/movies.module';
 
 @Module({
   imports: [
@@ -16,11 +19,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: 'mamou31',
       database: 'MovieTheaters',
       entities: ['dist/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      // synchronize: true,
     }),
     SessionsModule,
+    MoviesModule,
   ],
-  controllers: [AppController, SessionsController],
-  providers: [AppService, SessionsService],
+  controllers: [AppController, SessionsController, MoviesController],
+  providers: [AppService, SessionsService, MoviesService],
 })
 export class AppModule {}

@@ -12,7 +12,7 @@ export class SessionsService {
   async getSessionsByCinema(@Param() params: { cinemaId: string }) {
     const cinemaId = params.cinemaId;
     const sessionsByCinema = await this.dataSource.query(
-      `SELECT * FROM sessions WHERE cinema_id = '${cinemaId}'`,
+      `SELECT * FROM sessions INNER JOIN movies ON 'movie_id' = 'movies.id' WHERE cinema_id = '${cinemaId}'`,
     );
     return sessionsByCinema;
   }

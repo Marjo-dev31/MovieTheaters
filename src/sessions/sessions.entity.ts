@@ -1,8 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Movies } from 'src/movies/movies.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Sessions {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -11,8 +18,9 @@ export class Sessions {
   @Column()
   room_id: string;
 
-  @Column()
-  movie_id: string;
+  @OneToMany(() => Movies, (Movies) => Movies.id)
+  @JoinColumn({ name: 'id' })
+  movie_id: Movies;
 
   @Column()
   schedule_id: string;
